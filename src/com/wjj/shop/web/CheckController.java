@@ -71,7 +71,7 @@ public class CheckController extends HttpServlet {
         }
         req.getRequestDispatcher("/registerSuccess.jsp").forward(req,resp);
 
-
+//123456
 
     }
 
