@@ -19,37 +19,40 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 @WebServlet("/user")
-public class CheckController extends HttpServlet {
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+public class UserController extends BaseController {
+    /**
+     * 检查用户是否存在
+     * @param req
+     * @param resp
+     * @return 存在1或不存在0
+     */
+   public String check(HttpServletRequest req, HttpServletResponse resp){
 
-        //1.取出用户名
-        String username = req.getParameter("username");
+       //1.取出用户名
+       String username = req.getParameter("username");
 
-        //2.根据用户名,判断数据库中是否存在当前用户
-        UserService userService = new UserServiceImpl();
-        boolean result = userService.checkUser(username);
-        PrintWriter writer = resp.getWriter();
+       //2.根据用户名,判断数据库中是否存在当前用户
+       UserService userService = new UserServiceImpl();
+       boolean result = userService.checkUser(username);
 
-        if(result){
-            writer.print(Constants.HAS_USER);
-        }else{
-            writer.print(Constants.NOT_HAS_USER);
-        }
+       if(result){
+           return Constants.HAS_USER;
+       }
+       return Constants.NOT_HAS_USER;
 
-    }
+   }
 
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
+    /**
+     * 注册新用户
+     * @param req
+     * @param resp
+     * @return请求转发到不同界面 成功 /registerSuccess.jsp 失败 继续注册界面
+     */
+    public String register(HttpServletRequest req, HttpServletResponse resp){
         //请求乱码
-        req.setCharacterEncoding("UTF-8");
+//        req.setCharacterEncoding("UTF-8");
         //响应乱码 resp.setContentType();
         Map<String,String[]> parameterMap=req.getParameterMap();
-        for(Map.Entry<String,String[]> entry:parameterMap.entrySet()){
-            System.out.println("key="+entry.getKey());
-            System.out.println("value="+entry.getValue());
-        }
         User user = new User();
         try {
             BeanUtils.populate(user,parameterMap);//反射
@@ -66,13 +69,11 @@ public class CheckController extends HttpServlet {
             //重定向地址栏会变      不可以传值    可以往外部资源跳转
             // 请求转发 不变       可以传值      内部资源
             req.setAttribute("registerMsg","注册失败");
-            req.getRequestDispatcher("/register.jsp").forward(req,resp);
+            return Constants.FORWARD+"/register.jsp";
 
         }
-        req.getRequestDispatcher("/registerSuccess.jsp").forward(req,resp);
-
-//123456
-
+        return Constants.FORWARD+"/registerSuccess.jsp";
     }
+
 
 }
