@@ -3,6 +3,7 @@ package com.wjj.shop.web;
 import com.wjj.shop.entity.User;
 import com.wjj.shop.service.UserService;
 import com.wjj.shop.service.impl.UserServiceImpl;
+import com.wjj.shop.util.Base64Utils;
 import com.wjj.shop.util.Constants;
 import com.wjj.shop.util.MD5Util;
 import com.wjj.shop.util.RandomUtils;
@@ -73,6 +74,34 @@ public class UserController extends BaseController {
 
         }
         return Constants.FORWARD+"/registerSuccess.jsp";
+    }
+
+    /**
+     * 激活邮件的接口
+     * @param req
+     * @param resp
+     * @return
+     */
+    public String active(HttpServletRequest req, HttpServletResponse resp) {
+        String c = req.getParameter("c");
+        String code = Base64Utils.decode(c);
+        UserService userService = new UserServiceImpl();
+        int result = userService.activeUser(code);
+        switch (result){
+            case Constants.ACTIVE_FAIL:
+                req.setAttribute("msg","激活失败");
+                break;
+            case Constants.ACTIVE_SUCCESS:
+                req.setAttribute("msg","激活成功");
+                break;
+            default:
+                req.setAttribute("msg","用户已激活");
+                break;
+
+        }
+        return Constants.FORWARD+"/message.jsp";
+
+
     }
 
 

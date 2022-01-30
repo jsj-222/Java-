@@ -8,4 +8,6 @@ public interface UserService {
     boolean checkUser(String username);
 
     int register(User user);
+
+    int activeUser(String code);
 }
